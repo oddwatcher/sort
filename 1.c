@@ -26,6 +26,7 @@ node *delete (node *p)
     {
         (p->r)->l = p->l;
     }
+    printf("Deleting:%p:%d\n", p, p->data);
     free(p);
 }
 node *getright(node *p)
@@ -51,7 +52,7 @@ void output(node *p)
     p = getright(p);
     do
     {
-        printf("%d,%p,%p\n", p->data, p->l, p->r);
+        printf("%d,%p,%p,%p\n", p->data, p->l, p, p->r);
         p = p->l;
     } while (p != NULL);
 }
@@ -65,8 +66,8 @@ node *scan()
     node *H = newnode(0, NULL, NULL);
     for (; i > 0; i--)
     {
-        H->l = newnode(0, NULL, H);
-        H = H->l;
+        H->r = newnode(0, H, NULL);
+        H = H->r;
         scanf("%d", &(H->data));
         printf("%d,%p,%p,%p\n", H->data, H->l, H, H->r);
     }
@@ -121,42 +122,86 @@ node *getM(node *p)
     }
     return newnode((D + d) / 2, max, min);
 }
+int partition(node *L, node *R)
+{
+    if (L->r = R)
+    {   
+        if(L->data>R->data){
+            int a;
+            R->data = a;
+            R->data = L->data;
+            L->data = R->data;
+        }
+        return 0;
+    }
+    node *p = L;
+    node *piller = L;
+    if (L->l != NULL)
+    {
+        (L->l)->r = piller;
+    }else{
 
-node *partition(node* piller, node *L, node *R)
+    }
+    if (R->r != NULL)
+    {
+        (R->r)->l = piller;
+    }
+    piller->l = L->l;
+    piller->r = R->r;
+    while (p != R->r)
+    {
+        if (p->data > piller->data)
+        {
+            (piller->r)->l = newnode(p->data, piller, piller->r);
+            piller->r = (piller->r)->l;
+        }
+        else
+        {
+            (piller->l)->r = newnode(p->data, piller->l, piller);
+            piller->l = (piller->l)->r;
+        }
+        p = p->r;
+    }
+    partition(L, piller);
+    partition(R, piller);
+}
+
+/*node *partition(node* piller, node *L, node *R)
 {
     node *p =L;
     if(p->data>piller->data){
-	    piller->r= newnode(p->data,piller,piller->r);
-	    p=p->r;
-	    L = p;
-	    delete(p->l);
+        piller->r= newnode(p->data,piller,piller->r);
+        p=p->r;
+        L = p;
+        delete(p->l);
     }else {
-	    p=p->r;
+        p=p->r;
     }
     while(p!=piller){
-	    if (p->data > piller->data)
-	    {
-		piller->r = newnode(p->data, piller, piller->r);
-		p=p->r;
-		delete(p->l);
-	    }else{
-		    p=p->r;
-	    }
+        if (p->data > piller->data)
+        {
+        piller->r = newnode(p->data, piller, piller->r);
+        p=p->r;
+        delete(p->l);
+        }else{
+            p=p->r;
+        }
     }
     p=R;
     if(p->data<piller->data){
-	    piller->l= newnode(p->data,piller->l,piller);
-	    p=p->l;
+        piller->l= newnode(p->data,piller->l,piller);
+        p=p->l;
 
         if (p->data < piller)
         {
             piller->l = newnode(p->data, piller->l, piller);
         }
 
-}
+}*/
 node *quicksort(node *p)
 {
-    partition((getleft(p)->data + getright(p)->data) / 2, getleft(p), getright(p));
+    p = getleft(p);
+    partition(p->r, getright(p));
     return p;
 }
 
@@ -166,6 +211,6 @@ int main()
     A = bubble(A);
     output(A);
     A = scan();
-    A = partition(A->data, getleft(A), getright(A));
+    A = quicksort(A);
     output(A);
 }
