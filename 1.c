@@ -135,16 +135,18 @@ int partition(node *L, node *R)
         return 0;
     }
     node *p = L;
+    node *r;
+    node *l;
     node *piller = L;
     if (L->l != NULL)
     {
-        (L->l)->r = piller;
+        (L->l)->r = l;
     }else{
 
     }
     if (R->r != NULL)
     {
-        (R->r)->l = piller;
+        (R->r)->l = r;
     }
     piller->l = L->l;
     piller->r = R->r;
