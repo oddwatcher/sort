@@ -16,7 +16,7 @@ node *newnode(int data, node *l, node *r)
     new->r = r;
     return new;
 }
-node *delete (node *p)
+void delete (node *p)
 {
     if (p->l != NULL)
     {
@@ -124,48 +124,62 @@ node *getM(node *p)
 }
 int partition(node *L, node *R)
 {
-    if (L->r = R)
-    {   
+	printf("part\n");
         if(L->data>R->data){
             int a;
             R->data = a;
             R->data = L->data;
-            L->data = R->data;
+            L->data = a;
+	printf("check 1");
         }
-        return 0;
-    }
-    node *p = L;
-    node *r;
-    node *l;
-    node *piller = L;
-    if (L->l != NULL)
-    {
-        (L->l)->r = l;
-    }else{
+// check if only consists two elements between L&R 
+	printf("check 2");
+	if(L->r==R){
+		return 0;
+	}
+// establish a new chain and attach it to orignal chain
+// notice L&R will not be replaced to ensure the program won't lost track of chain
+    node *p = L->r; //used to climb over unsorted part
+    node *piller = newnode(L->data,NULL,NULL);//use Left of chain as piller
+    node *r = newnode(0,piller,R);//marks the left and right of the new chain but not intend to replace R&L
+    node *l = newnode(0,L,piller);//and attach it to original chain
+    piller->l = l; 
+    piller->r = r;// L<-l<->piller<->r->R
+	printf("check 3");
+//New idea is just use l&r as begining of the addition,after make sure of their position
 
-    }
-    if (R->r != NULL)
-    {
-        (R->r)->l = r;
-    }
-    piller->l = L->l;
-    piller->r = R->r;
-    while (p != R->r)
+    while (p != R)//insert elements from former chain to new chain,between l _ piller ,piller _ r p goes from left to right
     {
         if (p->data > piller->data)
         {
-            (piller->r)->l = newnode(p->data, piller, piller->r);
-            piller->r = (piller->r)->l;
+            r->l = newnode(p->data, r->l, r);
+            ((r->l)->l)->r = r->l;
         }
         else
         {
-            (piller->l)->r = newnode(p->data, piller->l, piller);
-            piller->l = (piller->l)->r;
+            l->r = newnode(p->data,l,l->r);
+	    ((l->r)->r)->l = l->r; 
         }
         p = p->r;
     }
+
+	printf("check 4");
+    p = L->r;
+    //remove former chain elements between L&R
+    while(p!=R){
+
+	printf("check 5");
+	    p = p->r;
+	    free(p->l);
+    }
+    delete(l);
+    delete(r);
+    L = L->r;
+    delete(L->l);
+    // recursion partition to achieve quicksort
     partition(L, piller);
-    partition(R, piller);
+    partition(piller, R);
+    return 0;
 }
 
 /*node *partition(node* piller, node *L, node *R)
@@ -202,8 +216,7 @@ int partition(node *L, node *R)
 }*/
 node *quicksort(node *p)
 {
-    p = getleft(p);
-    partition(p->r, getright(p));
+    partition(getleft(p), getright(p));
     return p;
 }
 
