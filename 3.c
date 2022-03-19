@@ -23,14 +23,14 @@ node *insertL(node *c, node *p)
 node *merge(node *A, node *B, node *AR, node *BR)
 {
     node *p = A;
-    BR = BR->r;
+    node *Bend = BR->r;
     while (1)
     {
         if (p->key >= B->key)
         {
 
             B = insertL(p, B);
-            if (B == BR)
+            if (B == Bend)
             {
                 break;
             }
@@ -45,13 +45,15 @@ node *merge(node *A, node *B, node *AR, node *BR)
             {
                 if (B->key > p->key)
                 {
-                    BR->r = AR->r;
-                    AR->r = B;
-                    B->l = AR;
-                    if (BR->r != NULL)
-                    {
-                        (BR->r)->l = BR;
+                    B->l=AR;
+                    if(AR->r!=BR){
+                        BR->r=AR->r;
+                        AR->r=BR;
                     }
+                    if(BR->r!=NULL){
+                        (BR->r)->l=BR;
+                    }
+                    
                     return BR;
                 }
             }
