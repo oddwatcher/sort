@@ -18,7 +18,7 @@ node *newnode(int key, node *l, node *r)
     return temp;
 }
 
-void deletenode (node *p)
+void deletenode(node *p)
 {
     if (p->l != NULL)
     {
@@ -53,6 +53,14 @@ node *getleft(node *p)
 void output(node *p)
 {
     p = getleft(p);
+    do
+    {
+        printf("%d,%p,%p,%p\n", p->key, p->l, p, p->r);
+        p = p->r;
+    } while (p != NULL);
+}
+void outputR(node *p)
+{
     do
     {
         printf("%d,%p,%p,%p\n", p->key, p->l, p, p->r);
@@ -127,33 +135,36 @@ node *getM(node *p)
 }
 int partition(node *L, node *R)
 {
-	printf("part\n");
-	if(L==R){
-		return 0;}
+    printf("part\n");
+    if (L == R)
+    {
+        return 0;
+    }
 
-        if(L->key>R->key){
-            int a;
-	    a = R->key;
-            R->key = L->key;
-            L->key = a;
-        }
-// check if only consists two elements between L&R 
-	if(L->r==R){
-		return 0;
-	}
+    if (L->key > R->key)
+    {
+        int a;
+        a = R->key;
+        R->key = L->key;
+        L->key = a;
+    }
+    // check if only consists two elements between L&R
+    if (L->r == R)
+    {
+        return 0;
+    }
 
+    // establish a new chain and attach it to orignal chain
+    // notice L&R will not be replaced to ensure the program won't lost track of chain
+    node *p = L->r;                             // used to climb over unsorted part
+    node *piller = newnode(L->key, NULL, NULL); // use Left of chain as piller
+    node *r = newnode(0, piller, R);            // marks the left and right of the new chain but not intend to replace R&L
+    node *l = newnode(0, L, piller);            // and attach it to original chain
+    piller->l = l;
+    piller->r = r; // L<-l<->piller<->r->R
+                   // New idea is just use l&r as begining of the addition,after make sure of their position
 
-// establish a new chain and attach it to orignal chain
-// notice L&R will not be replaced to ensure the program won't lost track of chain
-    node *p = L->r; //used to climb over unsorted part
-    node *piller = newnode(L->key,NULL,NULL);//use Left of chain as piller
-    node *r = newnode(0,piller,R);//marks the left and right of the new chain but not intend to replace R&L
-    node *l = newnode(0,L,piller);//and attach it to original chain
-    piller->l = l; 
-    piller->r = r;// L<-l<->piller<->r->R
-//New idea is just use l&r as begining of the addition,after make sure of their position
-
-    while (p != R)//insert elements from former chain to new chain,between l _ piller ,piller _ r p goes from left to right
+    while (p != R) // insert elements from former chain to new chain,between l _ piller ,piller _ r p goes from left to right
     {
         if (p->key > piller->key)
         {
@@ -162,16 +173,17 @@ int partition(node *L, node *R)
         }
         else
         {
-            l->r = newnode(p->key,l,l->r);
-	    ((l->r)->r)->l = l->r; 
+            l->r = newnode(p->key, l, l->r);
+            ((l->r)->r)->l = l->r;
         }
         p = p->r;
     }
     p = L->r;
-    //remove former chain elements between L&R
-    while(p!=R){
-	    p = p->r;
-	    free(p->l);
+    // remove former chain elements between L&R
+    while (p != R)
+    {
+        p = p->r;
+        free(p->l);
     }
     deletenode(l);
     deletenode(r);
@@ -179,10 +191,14 @@ int partition(node *L, node *R)
     deletenode(L->l);
 
     // recursion partition to achieve quicksort
-    if(piller!=L&&piller->l){
-	    partition(L,piller->l);}
-    if(piller!=R){
-	    partition(piller->r,R);}
+    if (piller != L && piller->l)
+    {
+        partition(L, piller->l);
+    }
+    if (piller != R)
+    {
+        partition(piller->r, R);
+    }
     return 0;
 }
 
@@ -191,4 +207,3 @@ node *quicksort(node *p)
     partition(getleft(p), getright(p));
     return p;
 }
-
