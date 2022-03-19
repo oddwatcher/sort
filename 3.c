@@ -46,14 +46,7 @@ node *merge(node *A, node *B, node *AR, node *BR)
                 if (B->key > p->key)
                 {
                     B->l=AR;
-                    if(AR->r!=BR){
-                        BR->r=AR->r;
-                        AR->r=BR;
-                    }
-                    if(BR->r!=NULL){
-                        (BR->r)->l=BR;
-                    }
-                    
+                    AR->r=B;
                     return BR;
                 }
             }
